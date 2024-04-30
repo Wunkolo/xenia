@@ -32,6 +32,8 @@
 
 #if XE_ARCH_AMD64
 #include <xmmintrin.h>
+#elif XE_ARCH_ARM64
+#include <arm64_neon.h>
 #endif
 
 namespace xe {
@@ -462,6 +464,65 @@ static ArchFloatMask ArchANDFloatMask(ArchFloatMask x, ArchFloatMask y) {
 XE_FORCEINLINE
 static uint32_t ArchFloatMaskSignbit(ArchFloatMask x) {
   return static_cast<uint32_t>(_mm_movemask_ps(x) & 1);
+}
+
+constexpr ArchFloatMask floatmask_zero{.0f};
+
+#elif XE_ARCH_ARM64
+// Utilities for NEON values.
+template <int N>
+float m128_f32(const float32x4_t& v) {
+  return vgetq_lane_f32(v, N);
+}
+template <int N>
+int32_t m128_i32(const int32x4_t& v) {
+  return vgetq_lane_s32(v, N);
+}
+template <int N>
+double m128_f64(const float64x2_t& v) {
+  return vgetq_lane_f64(v, N);
+}
+template <int N>
+int64_t m128_i64(const int64x2_t& v) {
+  return vgetq_lane_s64(v, N);
+}
+
+XE_FORCEINLINE
+static float ArchMin(float x, float y) {
+  return vgetq_lane_f32(vminq_f32(vdupq_n_f32(x), vdupq_n_f32(y)), 0);
+}
+XE_FORCEINLINE
+static float ArchMax(float x, float y) {
+  return vgetq_lane_f32(vmaxq_f32(vdupq_n_f32(x), vdupq_n_f32(y)), 0);
+}
+XE_FORCEINLINE
+static float ArchReciprocal(float den) {
+  return vgetq_lane_f32(vrecpeq_f32(vdupq_n_f32(den)), 0);
+}
+
+using ArchFloatMask = uint32x4_t;
+
+XE_FORCEINLINE
+static ArchFloatMask ArchCmpneqFloatMask(float x, float y) {
+  return vmvnq_u32(vceqq_f32(vdupq_n_f32(x), vdupq_n_f32(y)));
+}
+XE_FORCEINLINE
+static ArchFloatMask ArchORFloatMask(ArchFloatMask x, ArchFloatMask y) {
+  return vorrq_s32(x, y);
+}
+XE_FORCEINLINE
+static ArchFloatMask ArchXORFloatMask(ArchFloatMask x, ArchFloatMask y) {
+  return veorq_s32(x, y);
+}
+
+XE_FORCEINLINE
+static ArchFloatMask ArchANDFloatMask(ArchFloatMask x, ArchFloatMask y) {
+  return vandq_s32(x, y);
+}
+
+XE_FORCEINLINE
+static uint32_t ArchFloatMaskSignbit(ArchFloatMask x) {
+  return vgetq_lane_u32(x, 0) >> 31;
 }
 
 constexpr ArchFloatMask floatmask_zero{.0f};
