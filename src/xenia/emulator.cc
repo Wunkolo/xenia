@@ -63,6 +63,8 @@
 
 #if XE_ARCH_AMD64
 #include "xenia/cpu/backend/x64/x64_backend.h"
+#elif XE_ARCH_ARM64
+#include "xenia/cpu/backend/a64/a64_backend.h"
 #endif  // XE_ARCH
 
 DEFINE_double(time_scalar, 1.0,
@@ -233,9 +235,8 @@ X_STATUS Emulator::Setup(
     backend.reset(new xe::cpu::backend::x64::X64Backend());
   }
 #elif XE_ARCH_ARM64
-  // TODO(wunkolo): Arm64 backend
   if (cvars::cpu == "a64") {
-    backend.reset(new xe::cpu::backend::NullBackend());
+    backend.reset(new xe::cpu::backend::a64::A64Backend());
   }
 #endif  // XE_ARCH
   if (cvars::cpu == "any") {
@@ -244,7 +245,7 @@ X_STATUS Emulator::Setup(
       backend.reset(new xe::cpu::backend::x64::X64Backend());
 #elif XE_ARCH_ARM64
       // TODO(wunkolo): Arm64 backend
-      backend.reset(new xe::cpu::backend::NullBackend());
+      backend.reset(new xe::cpu::backend::a64::A64Backend());
 #endif  // XE_ARCH
     }
   }
