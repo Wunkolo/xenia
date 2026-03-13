@@ -6,5 +6,5 @@ target_compile_definitions(xenia-cpu-backend-a64 PRIVATE
 target_include_directories(xenia-cpu-backend-a64 PRIVATE
   ${PROJECT_SOURCE_DIR}/third_party/capstone/include
 )
-target_link_libraries(xenia-cpu-backend-a64 PUBLIC capstone fmt xenia-base xenia-cpu)
+target_link_libraries(xenia-cpu-backend-a64 PUBLIC capstone fmt oaknut xenia-base xenia-cpu)
 xe_target_defaults(xenia-cpu-backend-a64)
