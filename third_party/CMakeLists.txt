@@ -542,11 +542,12 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
     FFmpeg/libavutil/x86/tx_float_init.c
   )
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
-  # aarch64platform files
+  # aarch64 platform files
   target_sources(libavutil PRIVATE
-    FFmpeg/libavutil/aarch64/cpu.c
     FFmpeg/libavutil/aarch64/float_dsp_init.c
+    FFmpeg/libavutil/aarch64/float_dsp_neon.S
     FFmpeg/libavutil/aarch64/tx_float_init.c
+    FFmpeg/libavutil/aarch64/tx_float_neon.S
   )
 endif()
 ffmpeg_common(libavutil)
@@ -625,14 +626,23 @@ add_library(libavcodec STATIC
 if(WIN32)
   target_sources(libavcodec PRIVATE FFmpeg/libavcodec/file_open.c)
 endif()
-# x86 platform files
-if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+  # x86 platform files
   target_sources(libavcodec PRIVATE
     FFmpeg/libavcodec/x86/constants.c
     FFmpeg/libavcodec/x86/fdctdsp_init.c
     FFmpeg/libavcodec/x86/idctdsp_init.c
     FFmpeg/libavcodec/x86/mpegaudiodsp.c
     FFmpeg/libavcodec/x86/fdct.c
+  )
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+  # aarch64 platform files
+  target_sources(libavcodec PRIVATE
+    FFmpeg/libavcodec/aarch64/fdctdsp_init_aarch64.c
+    FFmpeg/libavcodec/aarch64/fdctdsp_neon.S
+    FFmpeg/libavcodec/aarch64/idctdsp_init_aarch64.c
+    FFmpeg/libavcodec/aarch64/mpegaudiodsp_init.c
+    FFmpeg/libavcodec/aarch64/mpegaudiodsp_neon.S
   )
 endif()
 target_include_directories(libavcodec PRIVATE
