@@ -70,7 +70,7 @@ class A64ThunkEmitter : public A64Emitter {
 };
 
 A64Backend::A64Backend() : Backend(), code_cache_(nullptr) {
-  if (cs_open(CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN, &capstone_handle_) !=
+  if (cs_open(CS_ARCH_AARCH64, CS_MODE_LITTLE_ENDIAN, &capstone_handle_) !=
       CS_ERR_OK) {
     assert_always("Failed to initialize capstone");
   }
