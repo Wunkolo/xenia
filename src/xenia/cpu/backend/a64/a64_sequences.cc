@@ -2677,7 +2677,7 @@ bool SelectSequence(A64Emitter* e, const Instr* i, const Instr** new_tail) {
       return true;
     }
   }
-  XELOGE("No sequence match for variant {}", i->opcode->name);
+  XELOGE("No sequence match for variant {}", GetOpcodeName(i->opcode->num));
   return false;
 }
 

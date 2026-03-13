@@ -276,7 +276,7 @@ bool A64Emitter::Emit(HIRBuilder* builder, EmitFunctionInfo& func_info) {
         // NOTE: If you encounter this after adding a new instruction, do a full
         // rebuild!
         assert_always();
-        XELOGE("Unable to process HIR opcode {}", instr->opcode->name);
+        XELOGE("Unable to process HIR opcode {}", GetOpcodeName(instr->opcode->num));
         break;
       }
       instr = new_tail;
