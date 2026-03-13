@@ -1808,7 +1808,7 @@ struct UNPACK : Sequence<UNPACK, I<OPCODE_UNPACK, V128Op, V128Op>> {
     std::memset(b, 0, sizeof(b));
 
     for (int i = 0; i < 2; i++) {
-      b[i] = half_float::detail::half2float(a[VEC128_W(6 + i)]);
+      b[i] = xenos_half_to_float(a[VEC128_W(6 + i)]);
     }
 
     // Constants, or something
@@ -1854,7 +1854,7 @@ struct UNPACK : Sequence<UNPACK, I<OPCODE_UNPACK, V128Op, V128Op>> {
     vst1q_u8(a, vld1q_u8(src1));
 
     for (int i = 0; i < 4; i++) {
-      b[i] = half_float::detail::half2float(a[VEC128_W(4 + i)]);
+      b[i] = xenos_half_to_float(a[VEC128_W(4 + i)]);
     }
 
     return vld1q_u8(b);
