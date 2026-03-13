@@ -76,7 +76,6 @@ if(MSVC)
   add_compile_options(
     /utf-8       # Build correctly on systems with non-Latin codepages
     /wd4201      # Nameless struct/unions are ok
-    /arch:AVX    # AVX vector extensions
     /MP          # Multi-processor compilation
   )
   add_compile_definitions(
@@ -84,11 +83,22 @@ if(MSVC)
     _CRT_SECURE_NO_WARNINGS
     WIN32
     _WIN64=1
-    _AMD64=1
     UNICODE
     _UNICODE
     IMGUI_DISABLE_OBSOLETE_FUNCTIONS
   )
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+    add_compile_options(
+      /arch:AVX    # AVX vector extensions
+    )
+    add_compile_definitions(
+      _AMD64=1
+    )
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+    add_compile_options(
+      /arch:armv8.0    # ARMv8.0 as a baseline
+    )
+  endif()
   add_link_options(
     /ignore:4006  # Ignores complaints about empty obj files
     /ignore:4221
@@ -136,7 +146,11 @@ if(MSVC)
 
 else()
   # GCC/Clang (Linux)
-  add_compile_options(-mavx)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+    add_compile_options(-mavx)
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+    add_compile_options(-march=armv8-a) # ARMv8.0 as a baseline
+  endif()
 
   # Disable specific warnings for C++
   add_compile_options(
