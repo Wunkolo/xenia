@@ -24,11 +24,13 @@ if(WIN32)
     ${CMAKE_CURRENT_SOURCE_DIR}/main_resources.rc
     ${PROJECT_SOURCE_DIR}/src/xenia/base/app_win32.manifest
   )
-  # main_init_win.cc needs SSE2 only (not AVX)
-  set_source_files_properties(
-    ${PROJECT_SOURCE_DIR}/src/xenia/base/main_init_win.cc
-    PROPERTIES COMPILE_OPTIONS "/arch:SSE2"
-  )
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+    # main_init_win.cc needs SSE2 only (not AVX)
+    set_source_files_properties(
+      ${PROJECT_SOURCE_DIR}/src/xenia/base/main_init_win.cc
+      PROPERTIES COMPILE_OPTIONS "/arch:SSE2"
+    )
+  endif()
 else()
   target_sources(xenia-app PRIVATE
     ${PROJECT_SOURCE_DIR}/src/xenia/base/main_init_posix.cc
