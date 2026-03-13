@@ -76,7 +76,13 @@ struct HostExceptionReport {
       : ExceptionInfo(_ExceptionInfo),
         Report_Scratchpos(0u),
         last_win32_error(GetLastError()),
+#if XE_ARCH_AMD64
         last_ntstatus(__readgsdword(0x1250)),
+#elif XE_ARCH_ARM64
+        // TODO(wunkolo): Figure out TEB/PEB offsets on ARM. PEB is in X18 and
+        // can be accessed with __getreg(18).
+        last_ntstatus(0),
+#endif
         errno_value(errno),
         address_format_ring_index(0)
 
@@ -169,9 +175,18 @@ static bool exception_pointers_handler(HostExceptionReport* report) {
   PVOID exception_addr =
       report->ExceptionInfo->ExceptionRecord->ExceptionAddress;
 
+#if XE_ARCH_AMD64
   DWORD64 last_stackpointer = report->ExceptionInfo->ContextRecord->Rsp;
+#elif XE_ARCH_ARM64
+  DWORD64 last_stackpointer = report->ExceptionInfo->ContextRecord->Sp;
+#endif
 
-  DWORD64 last_rip = report->ExceptionInfo->ContextRecord->Rip;
+#if XE_ARCH_AMD64
+  DWORD64 last_pc = report->ExceptionInfo->ContextRecord->Rip;
+#elif XE_ARCH_ARM64
+  DWORD64 last_pc = report->ExceptionInfo->ContextRecord->Pc;
+#endif
+
   DWORD except_code = report->ExceptionInfo->ExceptionRecord->ExceptionCode;
 
   std::string build = (
@@ -201,7 +216,7 @@ static bool exception_pointers_handler(HostExceptionReport* report) {
       "({})\n",
       title_info, build.c_str(), report->GetFormattedAddress(exception_addr),
       report->GetFormattedAddress(last_stackpointer),
-      report->GetFormattedAddress(last_rip), except_code,
+      report->GetFormattedAddress(last_pc), except_code,
       HostExceptionReport::ChompNewlines(Ntstatus_msg(except_code)));
 
   report->AddString(except_message.c_str());
