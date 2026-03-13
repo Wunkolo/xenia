@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-#include "third_party/capstone/include/capstone/arm64.h"
+#include "third_party/capstone/include/capstone/aarch64.h"
 #include "third_party/capstone/include/capstone/capstone.h"
 
 #include "xenia/base/exception_handler.h"
@@ -150,131 +150,131 @@ std::unique_ptr<GuestFunction> A64Backend::CreateGuestFunction(
   return std::make_unique<A64Function>(module, address);
 }
 
-uint64_t ReadCapstoneReg(HostThreadContext* context, arm64_reg reg) {
+uint64_t ReadCapstoneReg(HostThreadContext* context, aarch64_reg reg) {
   switch (reg) {
-    case ARM64_REG_X0:
+    case AARCH64_REG_X0:
       return context->x[0];
-    case ARM64_REG_X1:
+    case AARCH64_REG_X1:
       return context->x[1];
-    case ARM64_REG_X2:
+    case AARCH64_REG_X2:
       return context->x[2];
-    case ARM64_REG_X3:
+    case AARCH64_REG_X3:
       return context->x[3];
-    case ARM64_REG_X4:
+    case AARCH64_REG_X4:
       return context->x[4];
-    case ARM64_REG_X5:
+    case AARCH64_REG_X5:
       return context->x[5];
-    case ARM64_REG_X6:
+    case AARCH64_REG_X6:
       return context->x[6];
-    case ARM64_REG_X7:
+    case AARCH64_REG_X7:
       return context->x[7];
-    case ARM64_REG_X8:
+    case AARCH64_REG_X8:
       return context->x[8];
-    case ARM64_REG_X9:
+    case AARCH64_REG_X9:
       return context->x[9];
-    case ARM64_REG_X10:
+    case AARCH64_REG_X10:
       return context->x[10];
-    case ARM64_REG_X11:
+    case AARCH64_REG_X11:
       return context->x[11];
-    case ARM64_REG_X12:
+    case AARCH64_REG_X12:
       return context->x[12];
-    case ARM64_REG_X13:
+    case AARCH64_REG_X13:
       return context->x[13];
-    case ARM64_REG_X14:
+    case AARCH64_REG_X14:
       return context->x[14];
-    case ARM64_REG_X15:
+    case AARCH64_REG_X15:
       return context->x[15];
-    case ARM64_REG_X16:
+    case AARCH64_REG_X16:
       return context->x[16];
-    case ARM64_REG_X17:
+    case AARCH64_REG_X17:
       return context->x[17];
-    case ARM64_REG_X18:
+    case AARCH64_REG_X18:
       return context->x[18];
-    case ARM64_REG_X19:
+    case AARCH64_REG_X19:
       return context->x[19];
-    case ARM64_REG_X20:
+    case AARCH64_REG_X20:
       return context->x[20];
-    case ARM64_REG_X21:
+    case AARCH64_REG_X21:
       return context->x[21];
-    case ARM64_REG_X22:
+    case AARCH64_REG_X22:
       return context->x[22];
-    case ARM64_REG_X23:
+    case AARCH64_REG_X23:
       return context->x[23];
-    case ARM64_REG_X24:
+    case AARCH64_REG_X24:
       return context->x[24];
-    case ARM64_REG_X25:
+    case AARCH64_REG_X25:
       return context->x[25];
-    case ARM64_REG_X26:
+    case AARCH64_REG_X26:
       return context->x[26];
-    case ARM64_REG_X27:
+    case AARCH64_REG_X27:
       return context->x[27];
-    case ARM64_REG_X28:
+    case AARCH64_REG_X28:
       return context->x[28];
-    case ARM64_REG_X29:
+    case AARCH64_REG_X29:
       return context->x[29];
-    case ARM64_REG_X30:
+    case AARCH64_REG_X30:
       return context->x[30];
-    case ARM64_REG_W0:
+    case AARCH64_REG_W0:
       return uint32_t(context->x[0]);
-    case ARM64_REG_W1:
+    case AARCH64_REG_W1:
       return uint32_t(context->x[1]);
-    case ARM64_REG_W2:
+    case AARCH64_REG_W2:
       return uint32_t(context->x[2]);
-    case ARM64_REG_W3:
+    case AARCH64_REG_W3:
       return uint32_t(context->x[3]);
-    case ARM64_REG_W4:
+    case AARCH64_REG_W4:
       return uint32_t(context->x[4]);
-    case ARM64_REG_W5:
+    case AARCH64_REG_W5:
       return uint32_t(context->x[5]);
-    case ARM64_REG_W6:
+    case AARCH64_REG_W6:
       return uint32_t(context->x[6]);
-    case ARM64_REG_W7:
+    case AARCH64_REG_W7:
       return uint32_t(context->x[7]);
-    case ARM64_REG_W8:
+    case AARCH64_REG_W8:
       return uint32_t(context->x[8]);
-    case ARM64_REG_W9:
+    case AARCH64_REG_W9:
       return uint32_t(context->x[9]);
-    case ARM64_REG_W10:
+    case AARCH64_REG_W10:
       return uint32_t(context->x[10]);
-    case ARM64_REG_W11:
+    case AARCH64_REG_W11:
       return uint32_t(context->x[11]);
-    case ARM64_REG_W12:
+    case AARCH64_REG_W12:
       return uint32_t(context->x[12]);
-    case ARM64_REG_W13:
+    case AARCH64_REG_W13:
       return uint32_t(context->x[13]);
-    case ARM64_REG_W14:
+    case AARCH64_REG_W14:
       return uint32_t(context->x[14]);
-    case ARM64_REG_W15:
+    case AARCH64_REG_W15:
       return uint32_t(context->x[15]);
-    case ARM64_REG_W16:
+    case AARCH64_REG_W16:
       return uint32_t(context->x[16]);
-    case ARM64_REG_W17:
+    case AARCH64_REG_W17:
       return uint32_t(context->x[17]);
-    case ARM64_REG_W18:
+    case AARCH64_REG_W18:
       return uint32_t(context->x[18]);
-    case ARM64_REG_W19:
+    case AARCH64_REG_W19:
       return uint32_t(context->x[19]);
-    case ARM64_REG_W20:
+    case AARCH64_REG_W20:
       return uint32_t(context->x[20]);
-    case ARM64_REG_W21:
+    case AARCH64_REG_W21:
       return uint32_t(context->x[21]);
-    case ARM64_REG_W22:
+    case AARCH64_REG_W22:
       return uint32_t(context->x[22]);
-    case ARM64_REG_W23:
+    case AARCH64_REG_W23:
       return uint32_t(context->x[23]);
-    case ARM64_REG_W24:
+    case AARCH64_REG_W24:
       return uint32_t(context->x[24]);
-    case ARM64_REG_W25:
+    case AARCH64_REG_W25:
       return uint32_t(context->x[25]);
-    case ARM64_REG_W26:
+    case AARCH64_REG_W26:
       return uint32_t(context->x[26]);
-    case ARM64_REG_W27:
+    case AARCH64_REG_W27:
       return uint32_t(context->x[27]);
-    case ARM64_REG_W28:
+    case AARCH64_REG_W28:
       return uint32_t(context->x[28]);
-    case ARM64_REG_W29:
+    case AARCH64_REG_W29:
       return uint32_t(context->x[29]);
-    case ARM64_REG_W30:
+    case AARCH64_REG_W30:
       return uint32_t(context->x[30]);
     default:
       assert_unhandled_case(reg);
@@ -282,7 +282,7 @@ uint64_t ReadCapstoneReg(HostThreadContext* context, arm64_reg reg) {
   }
 }
 
-bool TestCapstonePstate(arm64_cc cond, uint32_t pstate) {
+bool TestCapstonePstate(AArch64CC_CondCode cond, uint32_t pstate) {
   // https://devblogs.microsoft.com/oldnewthing/20220815-00/?p=106975
   // Upper 4 bits of pstate are NZCV
   const bool N = !!(pstate & 0x80000000);
@@ -290,37 +290,37 @@ bool TestCapstonePstate(arm64_cc cond, uint32_t pstate) {
   const bool C = !!(pstate & 0x20000000);
   const bool V = !!(pstate & 0x10000000);
   switch (cond) {
-    case ARM64_CC_EQ:
+    case AArch64CC_EQ:
       return (Z == true);
-    case ARM64_CC_NE:
+    case AArch64CC_NE:
       return (Z == false);
-    case ARM64_CC_HS:
+    case AArch64CC_HS:
       return (C == true);
-    case ARM64_CC_LO:
+    case AArch64CC_LO:
       return (C == false);
-    case ARM64_CC_MI:
+    case AArch64CC_MI:
       return (N == true);
-    case ARM64_CC_PL:
+    case AArch64CC_PL:
       return (N == false);
-    case ARM64_CC_VS:
+    case AArch64CC_VS:
       return (V == true);
-    case ARM64_CC_VC:
+    case AArch64CC_VC:
       return (V == false);
-    case ARM64_CC_HI:
+    case AArch64CC_HI:
       return ((C == true) && (Z == false));
-    case ARM64_CC_LS:
+    case AArch64CC_LS:
       return ((C == false) || (Z == true));
-    case ARM64_CC_GE:
+    case AArch64CC_GE:
       return (N == V);
-    case ARM64_CC_LT:
+    case AArch64CC_LT:
       return (N != V);
-    case ARM64_CC_GT:
+    case AArch64CC_GT:
       return ((Z == false) && (N == V));
-    case ARM64_CC_LE:
+    case AArch64CC_LE:
       return ((Z == true) || (N != V));
-    case ARM64_CC_AL:
+    case AArch64CC_AL:
       return true;
-    case ARM64_CC_NV:
+    case AArch64CC_NV:
       return false;
     default:
       assert_unhandled_case(cond);
@@ -338,11 +338,11 @@ uint64_t A64Backend::CalculateNextHostInstruction(ThreadDebugInfo* thread_info,
   insn.detail = &all_detail;
   cs_disasm_iter(capstone_handle_, &machine_code_ptr,
                  &remaining_machine_code_size, &host_address, &insn);
-  const auto& detail = all_detail.arm64;
+  const auto& detail = all_detail.aarch64;
   switch (insn.id) {
-    case ARM64_INS_B:
-    case ARM64_INS_BL: {
-      assert_true(detail.operands[0].type == ARM64_OP_IMM);
+    case AARCH64_INS_B:
+    case AARCH64_INS_BL: {
+      assert_true(detail.operands[0].type == AARCH64_OP_IMM);
       const int64_t pc_offset = static_cast<int64_t>(detail.operands[0].imm);
       const bool test_passed =
           TestCapstonePstate(detail.cc, thread_info->host_context.cpsr);
@@ -352,22 +352,22 @@ uint64_t A64Backend::CalculateNextHostInstruction(ThreadDebugInfo* thread_info,
         return current_pc + insn.size;
       }
     } break;
-    case ARM64_INS_BR:
-    case ARM64_INS_BLR: {
-      assert_true(detail.operands[0].type == ARM64_OP_REG);
+    case AARCH64_INS_BR:
+    case AARCH64_INS_BLR: {
+      assert_true(detail.operands[0].type == AARCH64_OP_REG);
       const uint64_t target_pc =
           ReadCapstoneReg(&thread_info->host_context, detail.operands[0].reg);
       return target_pc;
     } break;
-    case ARM64_INS_RET: {
-      assert_true(detail.operands[0].type == ARM64_OP_REG);
+    case AARCH64_INS_RET: {
+      assert_true(detail.operands[0].type == AARCH64_OP_REG);
       const uint64_t target_pc =
           ReadCapstoneReg(&thread_info->host_context, detail.operands[0].reg);
       return target_pc;
     } break;
-    case ARM64_INS_CBNZ: {
-      assert_true(detail.operands[0].type == ARM64_OP_REG);
-      assert_true(detail.operands[1].type == ARM64_OP_IMM);
+    case AARCH64_INS_CBNZ: {
+      assert_true(detail.operands[0].type == AARCH64_OP_REG);
+      assert_true(detail.operands[1].type == AARCH64_OP_IMM);
       const int64_t pc_offset = static_cast<int64_t>(detail.operands[1].imm);
       const bool test_passed = (0 != ReadCapstoneReg(&thread_info->host_context,
                                                      detail.operands[0].reg));
@@ -377,9 +377,9 @@ uint64_t A64Backend::CalculateNextHostInstruction(ThreadDebugInfo* thread_info,
         return current_pc + insn.size;
       }
     } break;
-    case ARM64_INS_CBZ: {
-      assert_true(detail.operands[0].type == ARM64_OP_REG);
-      assert_true(detail.operands[1].type == ARM64_OP_IMM);
+    case AARCH64_INS_CBZ: {
+      assert_true(detail.operands[0].type == AARCH64_OP_REG);
+      assert_true(detail.operands[1].type == AARCH64_OP_IMM);
       const int64_t pc_offset = static_cast<int64_t>(detail.operands[1].imm);
       const bool test_passed = (0 == ReadCapstoneReg(&thread_info->host_context,
                                                      detail.operands[0].reg));

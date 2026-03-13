@@ -65,7 +65,7 @@ DebugWindow::DebugWindow(Emulator* emulator,
 #ifdef XE_ARCH_AMD64
       cs_open(CS_ARCH_X86, CS_MODE_64, &capstone_handle_)
 #elif XE_ARCH_ARM64
-      cs_open(CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN, &capstone_handle_)
+      cs_open(CS_ARCH_AARCH64, CS_MODE_LITTLE_ENDIAN, &capstone_handle_)
 #endif
       != CS_ERR_OK) {
     assert_always("Failed to initialize capstone");
