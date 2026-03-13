@@ -35,6 +35,11 @@ using xe::swcache::CacheLine;
 #if XE_ARCH_AMD64
 static constexpr unsigned NUM_CACHELINES_IN_PAGE = 4096 / sizeof(CacheLine);
 
+using VastCpyDispatch = void (*)(CacheLine* XE_RESTRICT physaddr,
+                                 CacheLine* XE_RESTRICT rdmapping,
+                                 uint32_t written_length);
+
+#if XE_ARCH_AMD64
 #if defined(__clang__)
 XE_FORCEINLINE
 static void mvdir64b(void* to, const void* from) {
@@ -99,9 +104,7 @@ static void XeCopy16384Movdir64M(CacheLine* XE_RESTRICT to,
   }
   XE_MSVC_REORDER_BARRIER();
 }
-using VastCpyDispatch = void (*)(CacheLine* XE_RESTRICT physaddr,
-                                 CacheLine* XE_RESTRICT rdmapping,
-                                 uint32_t written_length);
+
 static void vastcpy_impl_avx(CacheLine* XE_RESTRICT physaddr,
                              CacheLine* XE_RESTRICT rdmapping,
                              uint32_t written_length) {
@@ -210,6 +213,45 @@ static void first_vastcpy(CacheLine* XE_RESTRICT physaddr,
       dispatch_to_use;  // all future calls will go through our selected path
   return vastcpy_dispatch(physaddr, rdmapping, written_length);
 }
+
+#else
+XE_COLD
+static void vastcpy_generic(CacheLine* XE_RESTRICT physaddr,
+                            CacheLine* XE_RESTRICT rdmapping,
+                            uint32_t written_length);
+
+static VastCpyDispatch vastcpy_dispatch = vastcpy_generic;
+
+XE_COLD
+static void vastcpy_generic(CacheLine* XE_RESTRICT physaddr,
+                            CacheLine* XE_RESTRICT rdmapping,
+                            uint32_t written_length) {
+  if (!written_length) {
+    return;
+  }
+  uint32_t num_written_lines = written_length / XE_HOST_CACHE_LINE_SIZE;
+
+  uint32_t i = 0;
+
+  for (; i + 1 < num_written_lines; i += 2) {
+    xe::swcache::CacheLine line0, line1;
+
+    xe::swcache::ReadLine(&line0, rdmapping + i);
+
+    xe::swcache::ReadLine(&line1, rdmapping + i + 1);
+    XE_MSVC_REORDER_BARRIER();
+    xe::swcache::WriteLineNT(physaddr + i, &line0);
+    xe::swcache::WriteLineNT(physaddr + i + 1, &line1);
+  }
+
+  if (i < num_written_lines) {
+    xe::swcache::CacheLine line0;
+
+    xe::swcache::ReadLine(&line0, rdmapping + i);
+    xe::swcache::WriteLineNT(physaddr + i, &line0);
+  }
+}
+#endif
 
 XE_NOINLINE
 void vastcpy(uint8_t* XE_RESTRICT physaddr, uint8_t* XE_RESTRICT rdmapping,
