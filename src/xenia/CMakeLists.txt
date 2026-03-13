@@ -12,6 +12,7 @@ xe_target_defaults(xenia-core)
 # All subdirectories
 add_subdirectory(base)
 add_subdirectory(cpu)
+add_subdirectory(cpu/backend/a64)
 add_subdirectory(cpu/backend/x64)
 add_subdirectory(apu)
 add_subdirectory(apu/nop)
