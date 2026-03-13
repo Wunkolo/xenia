@@ -32,9 +32,13 @@
 #define ARCH_X86 0
 #define ARCH_X86_64 0
 
-#if defined(__aarch64__)
-  /* ARM64 (Android) */
-  #define SLIBSUF ".so"
+#if defined(__aarch64__) || defined(_M_ARM64 )
+  /* ARM64 (Windows, Android) */
+  #if defined(_WIN32)
+    #define SLIBSUF ".dll"
+  #else
+    #define SLIBSUF ".so"
+  #endif
   #undef  ARCH_AARCH64
   #define ARCH_AARCH64 1
   #define HAVE_ARMV8 1
@@ -51,6 +55,8 @@
   #define HAVE_FAST_64BIT 1
   #define HAVE_FAST_CLZ 1
   #define HAVE_SIMD_ALIGN_16 1
+  #define HAVE_SIMD_ALIGN_32 1
+  #define HAVE_SIMD_ALIGN_64 1
 #elif defined(__x86_64__) || defined(_M_X64)
   /* x86_64 (Windows, Linux, Android x86_64) */
   #if defined(_WIN32)
