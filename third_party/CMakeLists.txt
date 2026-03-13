@@ -531,8 +531,8 @@ add_library(libavutil STATIC
   FFmpeg/libavutil/iamf.c
   FFmpeg/libavutil/timestamp.c
 )
-# x86 platform files
-if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+  # x86 platform files
   target_sources(libavutil PRIVATE
     FFmpeg/libavutil/x86/cpu.c
     FFmpeg/libavutil/x86/fixed_dsp_init.c
@@ -540,6 +540,13 @@ if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
     FFmpeg/libavutil/x86/imgutils_init.c
     FFmpeg/libavutil/x86/lls_init.c
     FFmpeg/libavutil/x86/tx_float_init.c
+  )
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+  # aarch64platform files
+  target_sources(libavutil PRIVATE
+    FFmpeg/libavutil/aarch64/cpu.c
+    FFmpeg/libavutil/aarch64/float_dsp_init.c
+    FFmpeg/libavutil/aarch64/tx_float_init.c
   )
 endif()
 ffmpeg_common(libavutil)
