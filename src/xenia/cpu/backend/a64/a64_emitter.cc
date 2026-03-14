@@ -360,7 +360,8 @@ void A64Emitter::EmitTraceUserCallReturn() {}
 void A64Emitter::DebugBreak() { BRK(0xF000); }
 
 uint64_t TrapDebugPrint(void* raw_context, uint64_t address) {
-  auto thread_state = *reinterpret_cast<ThreadState**>(raw_context);
+  auto guest_context = reinterpret_cast<ppc::PPCContext_s*>(raw_context);
+  auto thread_state = guest_context->thread_state;
   uint32_t str_ptr = uint32_t(thread_state->context()->r[3]);
   // uint16_t str_len = uint16_t(thread_state->context()->r[4]);
   auto str = thread_state->memory()->TranslateVirtual<const char*>(str_ptr);
@@ -375,7 +376,8 @@ uint64_t TrapDebugPrint(void* raw_context, uint64_t address) {
 }
 
 uint64_t TrapDebugBreak(void* raw_context, uint64_t address) {
-  auto thread_state = *reinterpret_cast<ThreadState**>(raw_context);
+  auto guest_context = reinterpret_cast<ppc::PPCContext_s*>(raw_context);
+  auto thread_state = guest_context->thread_state;
   XELOGE("tw/td forced trap hit! This should be a crash!");
   if (cvars::break_on_debugbreak) {
     xe::debugging::Break();
@@ -414,7 +416,9 @@ void A64Emitter::UnimplementedInstr(const hir::Instr* i) {
 
 // This is used by the A64ThunkEmitter's ResolveFunctionThunk.
 uint64_t ResolveFunction(void* raw_context, uint64_t target_address) {
-  auto thread_state = *reinterpret_cast<ThreadState**>(raw_context);
+  auto guest_context = reinterpret_cast<ppc::PPCContext_s*>(raw_context);
+
+  auto thread_state = guest_context->thread_state;
 
   // TODO(benvanik): required?
   assert_not_zero(target_address);
