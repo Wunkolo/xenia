@@ -27,19 +27,34 @@ add_library(capstone STATIC
   capstone/utils.c
   capstone/Mapping.c
 )
-# Glob X86 arch files
-file(GLOB _capstone_x86_c "capstone/arch/X86/*.c")
-file(GLOB _capstone_x86_h "capstone/arch/X86/*.h")
-file(GLOB _capstone_x86_inc "capstone/arch/X86/*.inc")
-# Remove excluded files
-list(FILTER _capstone_x86_c EXCLUDE REGEX "X86ATTInstPrinter\\.c$")
-list(FILTER _capstone_x86_inc EXCLUDE REGEX "reduce\\.inc$")
-target_sources(capstone PRIVATE ${_capstone_x86_c} ${_capstone_x86_h} ${_capstone_x86_inc})
-target_compile_definitions(capstone PRIVATE
-  CAPSTONE_X86_ATT_DISABLE
-  CAPSTONE_HAS_X86
-  CAPSTONE_USE_SYS_DYN_MEM
-)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+  # Glob X86 arch files
+  file(GLOB _capstone_x86_c "capstone/arch/X86/*.c")
+  file(GLOB _capstone_x86_h "capstone/arch/X86/*.h")
+  file(GLOB _capstone_x86_inc "capstone/arch/X86/*.inc")
+  # Remove excluded files
+  list(FILTER _capstone_x86_c EXCLUDE REGEX "X86ATTInstPrinter\\.c$")
+  list(FILTER _capstone_x86_inc EXCLUDE REGEX "reduce\\.inc$")
+  target_sources(capstone PRIVATE ${_capstone_x86_c} ${_capstone_x86_h} ${_capstone_x86_inc})
+  target_compile_definitions(capstone PRIVATE
+    CAPSTONE_X86_ATT_DISABLE
+    CAPSTONE_HAS_X86
+    CAPSTONE_USE_SYS_DYN_MEM
+  )
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+  target_sources(capstone PRIVATE
+    capstone/MCInstPrinter.c
+  )
+  # Glob aarch64 arch files
+  file(GLOB _capstone_AArch64_c "capstone/arch/AArch64/*.c")
+  file(GLOB _capstone_AArch64_h "capstone/arch/AArch64/*.h")
+  file(GLOB _capstone_AArch64_inc "capstone/arch/AArch64/*.inc")
+  target_sources(capstone PRIVATE ${_capstone_AArch64_c} ${_capstone_AArch64_h} ${_capstone_AArch64_inc})
+  target_compile_definitions(capstone PRIVATE
+    CAPSTONE_HAS_AARCH64
+    CAPSTONE_USE_SYS_DYN_MEM
+  )
+endif()
 target_include_directories(capstone PUBLIC capstone/include PRIVATE capstone)
 # Force all capstone sources to compile as C
 file(GLOB_RECURSE _capstone_all_c "capstone/*.c")
