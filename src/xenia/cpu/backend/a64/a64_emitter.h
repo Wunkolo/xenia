@@ -168,9 +168,9 @@ class A64Emitter : public oaknut::VectorCodeGenerator {
     r = oaknut::QReg(idx);
   }
 
-  // Gets(and possibly create) an HIR label with the specified name
-  oaknut::Label* lookup_label(const char* label_name) {
-    return &label_lookup_[label_name];
+  // Gets(and possibly create) an emitter-label with the provided hir-label
+  oaknut::Label* lookup_label(const hir::Label& label) {
+    return &label_lookup_[label.GetIdString()];
   }
 
   oaknut::Label& epilog_label() { return *epilog_label_; }

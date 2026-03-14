@@ -263,7 +263,9 @@ bool A64Emitter::Emit(HIRBuilder* builder, EmitFunctionInfo& func_info) {
     // Mark block labels.
     auto label = block->label_head;
     while (label) {
-      l(label_lookup_[label->name]);
+      oaknut::Label* guest_label = lookup_label(*label);
+      assert_not_null(guest_label);
+      l(*guest_label);
       label = label->next;
     }
 
@@ -276,7 +278,8 @@ bool A64Emitter::Emit(HIRBuilder* builder, EmitFunctionInfo& func_info) {
         // NOTE: If you encounter this after adding a new instruction, do a full
         // rebuild!
         assert_always();
-        XELOGE("Unable to process HIR opcode {}", GetOpcodeName(instr->opcode->num));
+        XELOGE("Unable to process HIR opcode {}",
+               GetOpcodeName(instr->opcode->num));
         break;
       }
       instr = new_tail;
